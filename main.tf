@@ -12,14 +12,23 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "rg-maalsi" {
-  name     = "rg-mfouquet"
-  location = "West Europe"
+  name     = "rg-${var.project_name}${var.environment_suffix}"
+  location = var.location
 }
 
-output "main-rg-name" {
-  value = azurerm_resource_group.rg-maalsi.name
+resource "azurerm_service_plan" "app-plan" {
+  name                = "plan-${var.project_name}${var.environment_suffix}"
+  resource_group_name = azurerm_resource_group.rg-maalsi.name
+  location            = azurerm_resource_group.rg-maalsi.location
+  os_type             = "Linux"
+  sku_name            = "P1v2"
 }
 
-output "main-rg-id" {
-  value = azurerm_resource_group.rg-maalsi.id
+resource "azurerm_linux_web_app" "webapp" {
+  name                = "web-${var.project_name}${var.environment_suffix}"
+  resource_group_name = azurerm_resource_group.rg-maalsi.name
+  location            = azurerm_resource_group.rg-maalsi.location
+  service_plan_id     = azurerm_service_plan.app-plan.id
+
+  site_config {}
 }

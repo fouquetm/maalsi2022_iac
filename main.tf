@@ -59,7 +59,7 @@ resource "azurerm_linux_web_app" "webapp" {
 
   app_settings = {
     "RabbitMQ__Hostname" = "rabbitmq",
-    "RabbitMQ__Username" = "admin",
-    "RabbitMQ__Password" = "admin"
+    "RabbitMQ__Username" = data.azurerm_key_vault_secret.rabbitmq-login.value,
+    "RabbitMQ__Password" = data.azurerm_key_vault_secret.rabbitmq-password.value
   }
 }
